@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-deployment
+  labels:
+    app: api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+        - name: api
+          image: my-backend-api:latest # TODO: Replace with your actual Docker image name/registry
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+          env:
+            - name: OPENSEARCH_HOST
+              value: "opensearch-service"
+            - name: OPENSEARCH_PORT
+              value: "9200"
+          envFrom:
+            - secretRef:
+                name: api-secrets # Make sure to create this secret with your .env vars
+                optional: true
